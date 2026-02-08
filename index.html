@@ -3,115 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Operations LogBook</title>
-    
+    <title>IT Operations Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    
     <style>
-        /* === GAYA TAMPILAN (CSS) === */
-        :root { --primary-color: #d4a017; --bg-color: #f4f6f9; }
-        body { background-color: var(--bg-color); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        
-        /* 1. LAYAR LOADING & LOGIN */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 9999;
-            display: flex; justify-content: center; align-items: center; flex-direction: column;
+        body {
+            background-color: #f4f6f9;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .spinner { width: 40px; height: 40px; border: 4px solid #eee; border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;}
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        #forbidden-msg { color: #dc3545; display: none; text-align: center; margin-top: 20px; }
-
-        /* 2. DASHBOARD (Awalnya Sembunyi) */
-        #main-app { display: none; } /* KITA SEMBUNYIKAN DULU */
-        
-        /* ... (Masukkan CSS Sidebar, Card, Table LogBook Anda disini) ... */
-        /* Agar tidak kepanjangan, saya persingkat CSS layout utamanya */
-        .sidebar { width: 250px; height: 100vh; position: fixed; background: white; border-right: 1px solid #eee; padding: 20px; }
-        .content { margin-left: 250px; padding: 30px; }
-        @media (max-width: 768px) { .sidebar { display: none; } .content { margin-left: 0; } }
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .brand-logo {
+            width: 60px; height: 60px;
+            background-color: #000;
+            color: #fff;
+            border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        .btn-google {
+            background-color: #d4a017; /* Emas */
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-google:hover {
+            background-color: #b88a10;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
-        <div class="spinner" id="loader"></div>
-        <h4 id="status-text">Checking Access...</h4>
-        <div id="forbidden-msg">
-            <h1>🚫 Access Denied</h1>
-            <p>You are not authorized to view this page.<br>Please use your Company Google Account.</p>
-            <a href="https://accounts.google.com/Logout" class="btn btn-outline-danger btn-sm mt-3">Logout & Switch Account</a>
-        </div>
+    <div class="login-card">
+        <div class="brand-logo">IT</div>
+        <h4 class="mb-2 fw-bold">IT Operations LogBook</h4>
+        <p class="text-muted mb-4 small">Secure Access for IT Ops Team</p>
         
-        <button id="btn-login-trigger" class="btn btn-warning text-white fw-bold mt-3" style="display:none;" onclick="triggerLogin()">
-            <i class="bi bi-google"></i> Login with Google
-        </button>
-    </div>
+        <a id="loginBtn" href="#" class="btn btn-google shadow-sm">
+            <i class="bi bi-google me-2"></i> Login with Google
+        </a>
 
-    <div id="main-app">
-        <div class="sidebar">
-            <h3>IT LogBook</h3>
-            <div id="user-info">Loading User...</div>
-            <hr>
-            <button class="btn btn-primary w-100">Dashboard</button>
-        </div>
-
-        <div class="content">
-            <h2>Welcome, <span id="display-name">User</span>!</h2>
-            <p>This is your secure dashboard.</p>
-            <div class="alert alert-success">✅ Data Loaded from Google Script</div>
+        <div class="mt-4 text-muted" style="font-size: 0.7rem;">
+            &copy; 2026 IT Operations GoWork
         </div>
     </div>
 
     <script>
-        // --- GANTI URL INI DENGAN DEPLOYMENT BARU ANDA ---
-        const SCRIPT_URL = "https://script.google.com/a/macros/go-work.com/s/AKfycbxWEFNa6Arg1B3ec4B8A7UEjn06jGWYfSSw9dGKkHXdKXzEHXhnZglCHKoHGhZJGBhm/exec";
-
-        // 1. Cek Status Login saat Web Dibuka
-        window.onload = function() {
-            checkAccess();
-        };
-
-        function checkAccess() {
-            // Kita pakai teknik JSONP atau Fetch (dengan mode no-cors jika perlu, tapi JSONP lebih stabil untuk Google Script API sederhana)
-            // Namun karena CORS Google Script agak ketat, cara paling ampuh "seolah-olah login" adalah fetch biasa.
-            
-            fetch(SCRIPT_URL)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === "success") {
-                    // BERHASIL: Buka Dashboard
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('main-app').style.display = 'block';
-                    
-                    document.getElementById('display-name').innerText = data.user;
-                    document.getElementById('user-info').innerText = data.user;
-                } else {
-                    // DITOLAK: Tampilkan Forbidden
-                    showForbidden();
-                }
-            })
-            .catch(error => {
-                // ERROR (Biasanya karena belum login browser sama sekali)
-                console.error("Login Error:", error);
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('status-text').innerText = "Please Login first";
-                document.getElementById('btn-login-trigger').style.display = 'block';
-            });
-        }
-
-        function showForbidden() {
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('status-text').style.display = 'none';
-            document.getElementById('forbidden-msg').style.display = 'block';
-        }
-
-        function triggerLogin() {
-            // Trik: Buka tab baru ke Google Script untuk memancing Login Cookie, lalu balik lagi
-            window.open(SCRIPT_URL, '_blank');
-        }
+        // --- MASUKKAN LINK GOOGLE SCRIPT TERBARU DI BAWAH INI ---
+        var scriptUrl = "https://script.google.com/a/macros/go-work.com/s/AKfycbzOZmlP4YmSzIy6hfcV6Wiz0pF1_DumTAlXym69DKKi6j9rWb3_Yt5b_0OZ_TTVzASY0A/exec";
+        
+        document.getElementById('loginBtn').href = scriptUrl;
     </script>
+
 </body>
 </html>
