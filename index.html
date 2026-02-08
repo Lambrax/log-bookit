@@ -3,311 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT Operations LogBook</title>
+    <title>IT Operations Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    
     <style>
-        :root { --primary: #d4a017; --bg: #f4f6f9; }
-        body { background: var(--bg); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
-        
-        /* Sidebar Styles */
-        .sidebar { width: 260px; height: 100vh; position: fixed; background: #fff; padding: 20px; border-right: 1px solid #eee; display: flex; flex-direction: column; z-index: 100; }
-        .main-content { margin-left: 260px; padding: 30px; }
-        
-        /* Profile & Stats Cards */
-        .profile-card { background: #fff; border: 1px solid #eee; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .avatar { width: 40px; height: 40px; background: var(--primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .stat-card { background: #fff; border: none; border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); text-align: center; height: 100%; }
-        .stat-num { font-size: 2rem; font-weight: bold; margin-top: 5px; }
-
-        /* Mobile Responsive */
-        @media(max-width:768px) { .sidebar { display:none; } .main-content { margin-left:0; } }
-        
-        /* Loading Overlay */
-        #loader { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction: column; }
+        body {
+            background-color: #f4f6f9;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        .brand-logo {
+            width: 60px; height: 60px;
+            background-color: #000;
+            color: #fff;
+            border-radius: 12px;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 1.5rem; font-weight: bold;
+            margin: 0 auto 20px;
+        }
+        .btn-google {
+            background-color: #d4a017; /* Emas */
+            color: white;
+            font-weight: 600;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            border: none;
+            transition: all 0.2s;
+        }
+        .btn-google:hover {
+            background-color: #b88a10;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="spinner-border text-warning mb-2" role="status"></div>
-        <div class="small text-muted">Connecting to Google Sheet...</div>
-    </div>
-
-    <div class="modal fade" id="loginModal" data-bs-backdrop="static" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-warning text-white">
-                    <h5 class="modal-title fw-bold">IT LogBook Login</h5>
-                </div>
-                <div class="modal-body text-center p-4">
-                    <p class="mb-3">Please enter your work email to access the dashboard.</p>
-                    <input type="email" id="inputEmail" class="form-control text-center" placeholder="name@go-work.com">
-                </div>
-                <div class="modal-footer justify-content-center border-0 pb-4">
-                    <button type="button" class="btn btn-dark w-75" onclick="saveUser()">Login Access</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="sidebar">
-        <h4 class="fw-bold mb-4 ps-2"><span class="badge bg-dark">IT</span> LogBook</h4>
+    <div class="login-card">
+        <div class="brand-logo">IT</div>
+        <h4 class="mb-2 fw-bold">IT Operations LogBook</h4>
+        <p class="text-muted mb-4 small">Secure Access for IT Ops Team</p>
         
-        <div class="profile-card">
-            <div class="avatar" id="avText">U</div>
-            <div style="overflow:hidden;">
-                <div class="fw-bold small" id="uName">Guest</div>
-                <div class="text-muted small" style="font-size:0.7rem;" id="uEmail">Not Logged In</div>
-            </div>
-        </div>
+        <a id="loginBtn" href="#" class="btn btn-google shadow-sm">
+            <i class="bi bi-google me-2"></i> Login with Google
+        </a>
 
-        <button class="btn btn-warning text-white w-100 mb-3 fw-bold shadow-sm" onclick="showSection('form')">
-            <i class="bi bi-plus-circle me-2"></i> New Issue
-        </button>
-        <button class="btn btn-light w-100 text-start" onclick="showSection('dash')">
-            <i class="bi bi-grid me-2"></i> Dashboard
-        </button>
-        
-        <div class="mt-auto text-muted small ps-2">
-            &copy; 2026 IT Operations
+        <div class="mt-4 text-muted" style="font-size: 0.7rem;">
+            &copy; 2026 IT Operations GoWork
         </div>
     </div>
 
-    <div class="main-content">
-        
-        <div id="sect-dash">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold m-0">Dashboard Overview</h3>
-                <button class="btn btn-sm btn-outline-secondary" onclick="loadDashboard()">
-                    <i class="bi bi-arrow-clockwise"></i> Refresh Data
-                </button>
-            </div>
-
-            <div class="row g-3 mb-4">
-                <div class="col-md-3 col-6"><div class="stat-card"><h5>Pending</h5><div class="stat-num text-danger" id="stat-open">-</div></div></div>
-                <div class="col-md-3 col-6"><div class="stat-card"><h5>Today</h5><div class="stat-num text-success" id="stat-today">-</div></div></div>
-                <div class="col-md-3 col-6"><div class="stat-card"><h5>This Month</h5><div class="stat-num text-primary" id="stat-month">-</div></div></div>
-                <div class="col-md-3 col-6"><div class="stat-card"><h5>Total Log</h5><div class="stat-num text-dark" id="stat-total">-</div></div></div>
-            </div>
-
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white fw-bold py-3 border-bottom">
-                    <i class="bi bi-table me-2"></i> Recent Activity Logs
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Date / Time</th>
-                                <th>Issue Description</th>
-                                <th>PIC</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body">
-                            <tr><td colspan="4" class="text-center py-5 text-muted">Loading data from spreadsheet...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="sect-form" style="display:none;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold m-0">New Issue Entry</h3>
-                <button class="btn btn-sm btn-outline-secondary" onclick="showSection('dash')">
-                    <i class="bi bi-arrow-left"></i> Back
-                </button>
-            </div>
-
-            <div class="card p-4 border-0 shadow-sm" style="max-width: 800px;">
-                <form id="issueForm" onsubmit="submitForm(event)">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Date Issue</label>
-                            <input type="date" class="form-control" name="dateIssue" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Time Issue</label>
-                            <input type="time" class="form-control" name="timeIssue" required>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Location</label>
-                            <select class="form-select" name="location">
-                                <option>BSD GOP 1</option><option>RDTX Square</option><option>Menara Rajawali</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Requestor</label>
-                            <input type="text" class="form-control" name="requestor" placeholder="Name">
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label fw-bold">Issue Description</label>
-                            <textarea class="form-control" name="issueDesc" rows="3" placeholder="Describe the problem..."></textarea>
-                        </div>
-
-                         <div class="col-md-6">
-                            <label class="form-label fw-bold">Issue Type</label>
-                            <select class="form-select" name="issueType">
-                                <option>User</option><option>Specific Area</option><option>Network</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-bold">Incoming Request</label>
-                            <select class="form-select" name="incoming">
-                                <option>WhatsApp Group</option><option>Direct</option><option>Email</option>
-                            </select>
-                        </div>
-                        
-                        <input type="hidden" name="pic" id="formPic">
-                        <input type="hidden" name="type" value="Issue">
-                    </div>
-                    
-                    <div class="mt-4 d-grid">
-                        <button type="submit" class="btn btn-success fw-bold py-2">Submit To LogBook</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // =========================================================================
-        // PENTING: PASTE URL GOOGLE SCRIPT ANDA DI BAWAH INI (JANGAN SALAH!)
-        // =========================================================================
-        const API_URL = "https://script.google.com/macros/s/AKfycbwzIo8LpoTFkjj-_fT_yPDayjGr-YXOBk0oK1AhyIUJHXGxytAFAr0kS7uf4-XJJ3WuWg/exec"; 
-        // =========================================================================
-
-        // 1. SAAT WEBSITE DIBUKA
-        window.onload = function() {
-            checkLogin();
-            loadDashboard();
-        };
-
-        // 2. SISTEM LOGIN (SIMPAN DI BROWSER)
-        function checkLogin() {
-            var user = localStorage.getItem("itops_user");
-            if (!user) {
-                var myModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                myModal.show();
-            } else {
-                updateProfileUI(user);
-            }
-        }
-
-        function saveUser() {
-            var email = document.getElementById("inputEmail").value;
-            if(email) {
-                localStorage.setItem("itops_user", email);
-                updateProfileUI(email);
-                bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
-            }
-        }
-
-        function updateProfileUI(email) {
-            document.getElementById("uEmail").innerText = email;
-            var name = email.split('@')[0].toUpperCase().replace('.',' ');
-            document.getElementById("uName").innerText = name;
-            document.getElementById("avText").innerText = name.charAt(0);
-            document.getElementById("formPic").value = name; // Otomatis isi PIC di form
-        }
-
-        // 3. LOAD DATA (STATISTIK & TABEL)
-        function loadDashboard() {
-            document.getElementById("loader").style.display = 'flex'; // Munculkan loading
-
-            // A. Ambil Statistik
-            fetch(API_URL + "?action=getDashboard")
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById("stat-total").innerText = data.total;
-                document.getElementById("stat-open").innerText = data.open;
-                document.getElementById("stat-today").innerText = data.today;
-                document.getElementById("stat-month").innerText = data.month;
-            })
-            .catch(err => console.log("Stats Error:", err));
-
-            // B. Ambil Tabel (LOGIKA BARU)
-            fetch(API_URL + "?action=getLogs")
-            .then(res => res.json())
-            .then(rows => {
-                var tbody = document.getElementById("table-body");
-                tbody.innerHTML = ""; // Bersihkan loading
-
-                if(!rows || rows.length === 0) {
-                    tbody.innerHTML = "<tr><td colspan='4' class='text-center py-3'>No data found</td></tr>";
-                } else {
-                    rows.forEach(row => {
-                        // row[0]=Date, row[1]=Time, row[2]=Loc, row[3]=Type, row[7]=PIC, row[9]=Desc, row[13]=ResolvedDate
-                        
-                        // Cek status: Jika tanggal resolved ada isinya, berarti DONE.
-                        var isDone = (row[13] && row[13] !== "" && row[13] !== "-");
-                        var statusBadge = isDone 
-                            ? '<span class="badge bg-success">Done</span>' 
-                            : '<span class="badge bg-danger">Open</span>';
-                        
-                        var tr = `
-                            <tr>
-                                <td class="small fw-bold">${row[0]}<br><span class="text-muted fw-normal">${row[1]}</span></td>
-                                <td>
-                                    <div style="font-weight:600;">${row[9]}</div>
-                                    <div class="text-muted small"><i class="bi bi-geo-alt"></i> ${row[2]} &bull; ${row[3]}</div>
-                                </td>
-                                <td><span class="badge bg-light text-dark border">${row[7]}</span></td>
-                                <td>${statusBadge}</td>
-                            </tr>
-                        `;
-                        tbody.innerHTML += tr;
-                    });
-                }
-                document.getElementById("loader").style.display = 'none'; // Matikan loading
-            })
-            .catch(err => {
-                console.error("Table Error:", err);
-                document.getElementById("loader").style.display = 'none';
-            });
-        }
-
-        // 4. KIRIM DATA FORM
-        function submitForm(e) {
-            e.preventDefault();
-            document.getElementById("loader").style.display = 'flex';
-
-            var formData = new FormData(e.target);
-            var object = {};
-            formData.forEach((value, key) => object[key] = value);
-
-            fetch(API_URL, {
-                method: "POST",
-                body: JSON.stringify(object)
-            })
-            .then(res => res.json())
-            .then(result => {
-                alert("Success! Data saved to LogBook.");
-                e.target.reset(); // Kosongkan form
-                loadDashboard(); // Refresh data
-                showSection('dash'); // Kembali ke dashboard
-                document.getElementById("loader").style.display = 'none';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("Data Sent!"); 
-                document.getElementById("loader").style.display = 'none';
-            });
-        }
-
-        // 5. PINDAH HALAMAN (Navigasi)
-        function showSection(id) {
-            document.getElementById('sect-dash').style.display = 'none';
-            document.getElementById('sect-form').style.display = 'none';
-            document.getElementById('sect-' + id).style.display = 'block';
-        }
+        // --- MASUKKAN LINK GOOGLE SCRIPT TERBARU DI BAWAH INI ---
+        var scriptUrl = "https://script.google.com/a/macros/go-work.com/s/AKfycbxWEFNa6Arg1B3ec4B8A7UEjn06jGWYfSSw9dGKkHXdKXzEHXhnZglCHKoHGhZJGBhm/exec";
+        
+        document.getElementById('loginBtn').href = scriptUrl;
     </script>
+
 </body>
 </html>
